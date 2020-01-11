@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.abao.gmall.manageservice.mapper.SpuSaleAttrMapper" >
+
+
+    <!--自定义结果返回集-->
+    <resultMap id="spuSaleAttrMap" type="com.abao.gmall.bean.SpuSaleAttr" autoMapping="true">
+
+        <id property="id" column="id"></id>
+
+        <!--<result property="" column=""></result>-->
+
+        <collection property="spuSaleAttrValueList" autoMapping="true" ofType="com.abao.gmall.bean.SpuSaleAttrValue">
+            <id property="id" column="sale_attr_value_id"></id>
+        </collection>
+
+    </resultMap>
+
+    <!--根据spuId查询 销售属性 和 销售属性值-->
+    <select id="selectSpuSaleAttrList" resultMap="spuSaleAttrMap">
+        select
+        sa.id ,sa.spu_id, sa.sale_attr_name,sa.sale_attr_id,
+        sv.id sale_attr_value_id,sv.sale_attr_value_name
+
+        from spu_sale_attr sa
+        inner join spu_sale_attr_value sv
+        on sa.spu_id = sv.spu_id
+        and sa.sale_attr_id=sv.sale_attr_id
+
+        where sa.spu_id=#{spuId}
+
+    </select>
+
+
+
+
+    <!--根据skuId 和 spuId 查询详情页 所有销售属性值集合 和 sku选中值-->
+    <select id="selectSpuSaleAttrListCheckBySku" resultMap="spuSaleAttrMap">
+
+        select
+
+               ssa.id,ssa.spu_id,ssa.sale_attr_id,ssa.sale_attr_name,
+
+               spav.id sale_attr_value_id,spav.spu_id,spav.sale_attr_id,spav.sale_attr_value_name,
+
+               skav.id,skav.sku_id,skav.sale_attr_id,skav.sale_attr_value_id,skav.sale_attr_name,skav.sale_attr_value_name,
+
+               if(skav.id is null,0,1) isChecked
+
+
+
+        from spu_sale_attr ssa inner join spu_sale_attr_value spav on ssa.spu_id= spav.spu_id and ssa.sale_attr_id = spav.sale_attr_id
+
+
+        left join sku_sale_attr_value skav on skav.sale_attr_id = ssa.sale_attr_id and skav.sale_attr_value_id = spav.id and skav.sku_id = #{arg0}
+
+        where ssa.spu_id = #{arg1}
+
+        order by spav.sale_attr_id,spav.id
+
+    </select>
+
+
+
+</mapper>

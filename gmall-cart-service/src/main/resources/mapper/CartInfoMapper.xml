@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.abao.gmall.cart.mapper.CartInfoMapper">
+
+
+    <resultMap id="cartInfoMap" type="com.abao.gmall.bean.CartInfo" autoMapping="true">
+
+
+        <id property="id" column="id" ></id>
+
+        <result property="skuPrice" column="price"></result>
+
+    </resultMap>
+
+
+    <select id="selectCartListByUserId" resultMap="cartInfoMap" >
+
+          select ci.*,if(si.price is null,ci.cart_price,si.price) price
+
+            from cart_info ci left join sku_info si on ci.sku_id = si.id
+
+            where ci.user_id = #{0}
+
+
+    </select>
+
+
+
+</mapper>
